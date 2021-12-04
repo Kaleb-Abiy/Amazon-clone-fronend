@@ -4,10 +4,18 @@ import SearchIcon from '@mui/icons-material/Search';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { Link } from 'react-router-dom';
 import { useStateValue } from './StateProvider';
+import { signOut } from '@firebase/auth';
+import { auth } from './firebase';
 
 
 function Header() {
-    const [{basket}, dispatch] = useStateValue();
+    const [{basket, user}, dispatch] = useStateValue();
+
+    const handleAuth = ()=>{
+        if(user){
+            signOut(auth)
+        }
+    }
     return (
         <div className="header">
             <Link to="/">
@@ -23,17 +31,18 @@ function Header() {
             </div>
 
             <div className="header__nav">
-                <div className="header__option">
+            <Link to={!user && "/login"}>
+                <div onClick={handleAuth} className="header__option">
                     <span className="header__optionLineOne">
-                       Hello, Guest
+                       Hello,{!user ? 'Guest': user.email}
                      </span>
 
-                     <Link to="/login">
+                     
                     <span className="header__optionLineTwo">
-                        Sign In
+                        {user ? "Sign out": "sign in"}
                     </span>
-                    </Link>
                 </div>
+                </Link>
 
                 <div className="header__option">
                     <span className="header__optionLineOne">
@@ -52,16 +61,14 @@ function Header() {
                         Prime
                     </span>
                 </div>
-
-                <div className="header__optionBasket">
-                    <Link to="/checkout">
+                <Link to="/checkout">
+                <div className="header__optionBasket">    
                     <ShoppingBasketIcon />
-                    
                     <span className="header__optionLineTwo header__basketCount">
                         {basket.length}
-                    </span>
-                    </Link>
+                    </span>       
                 </div>
+                </Link>
                 
 
             </div>
